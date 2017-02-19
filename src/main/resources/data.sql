@@ -1,0 +1,9 @@
+INSERT INTO CUSTOMER VALUES (1, 'wonwoo', 'wonwoo@test.com');
+INSERT INTO CUSTOMER VALUES (2, 'kevin', 'kevin@test.com');
+
+INSERT INTO PRODUCT VALUES (1, 'iphone', 1);
+INSERT INTO PRODUCT VALUES (2, 'imac', 1);
+INSERT INTO PRODUCT VALUES (3, 'book', 1);
+INSERT INTO PRODUCT VALUES (4, 'mac pro', 1);
+INSERT INTO PRODUCT VALUES (5, 'iphone 7', 2);
+INSERT INTO PRODUCT VALUES (6, 'mac pro 2017', 2);

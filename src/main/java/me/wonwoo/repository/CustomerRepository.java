@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 
@@ -36,12 +38,26 @@ public class CustomerRepository {
       .values(name, email);
   }
 
+  public Optional<CustomerDTO> findOne(Integer seq) {
+    final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
+      .leftJoin(Product.PRODUCT)
+      .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
+      .where(Customer.CUSTOMER.ID.eq(seq))
+      .fetch()
+      .intoGroups(Customer.CUSTOMER.fields());
+    return getCollect(recordResultMap).findFirst();
+  }
+
   public Collection<CustomerDTO> findAll() {
     final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
       .leftJoin(Product.PRODUCT)
       .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
       .fetch()
       .intoGroups(Customer.CUSTOMER.fields());
+    return getCollect(recordResultMap).collect(toList());
+  }
+
+  private Stream<CustomerDTO> getCollect(Map<Record, Result<Record>> recordResultMap) {
     return recordResultMap
       .values()
       .stream()
@@ -55,6 +71,6 @@ public class CustomerRepository {
           .filter(productDTO -> productDTO.getId() != null)
           .collect(toList());
         return new CustomerDTO(customerId, name, email, products);
-      }).collect(toList());
+      });
   }
 }

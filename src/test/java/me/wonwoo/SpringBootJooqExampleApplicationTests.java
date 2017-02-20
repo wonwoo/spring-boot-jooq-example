@@ -29,4 +29,13 @@ public class SpringBootJooqExampleApplicationTests {
 		assertThat(customerDTO.getEmail()).isEqualTo("wonwoo@test.com");
 		assertThat(customerDTO.getProducts()).hasSize(4);
 	}
+
+	@Test
+	public void findOneTest() {
+		final CustomerDTO customerDTO = customerRepository.findOne(1).get();
+		assertThat(customerDTO.getId()).isEqualTo(1);
+		assertThat(customerDTO.getName()).isEqualTo("wonwoo");
+		assertThat(customerDTO.getEmail()).isEqualTo("wonwoo@test.com");
+		assertThat(customerDTO.getProducts()).hasSize(4);
+	}
 }

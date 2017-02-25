@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.*;
  * Created by wonwoo on 2017. 2. 19..
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class CustomerRepository {
 
   private final DSLContext dslContext;
@@ -32,6 +32,7 @@ public class CustomerRepository {
     this.dslContext = dslContext;
   }
 
+  @Transactional
   public void save(String name, String email) {
     this.dslContext.insertInto(Customer.CUSTOMER)
       .columns(Customer.CUSTOMER.NAME, Customer.CUSTOMER.EMAIL)
@@ -48,20 +49,21 @@ public class CustomerRepository {
     return getCollect(recordResultMap).findFirst();
   }
 
-  public Collection<CustomerDTO> findByname(String name) {
-    final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
-      .leftJoin(Product.PRODUCT)
-      .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
-      .where(Customer.CUSTOMER.NAME.eq(name))
-      .fetch()
-      .intoGroups(Customer.CUSTOMER.fields());
-    return getCollect(recordResultMap).collect(toList());
-  }
 
   public Collection<CustomerDTO> findAll() {
     final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
       .leftJoin(Product.PRODUCT)
       .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
+      .fetch()
+      .intoGroups(Customer.CUSTOMER.fields());
+    return getCollect(recordResultMap).collect(toList());
+  }
+
+  public Collection<CustomerDTO> findByname(String name) {
+    final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
+      .leftJoin(Product.PRODUCT)
+      .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
+      .where(Customer.CUSTOMER.NAME.eq(name))
       .fetch()
       .intoGroups(Customer.CUSTOMER.fields());
     return getCollect(recordResultMap).collect(toList());

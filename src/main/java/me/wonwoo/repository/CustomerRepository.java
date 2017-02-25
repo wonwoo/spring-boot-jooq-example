@@ -35,7 +35,7 @@ public class CustomerRepository {
   public void save(String name, String email) {
     this.dslContext.insertInto(Customer.CUSTOMER)
       .columns(Customer.CUSTOMER.NAME, Customer.CUSTOMER.EMAIL)
-      .values(name, email);
+      .values(name, email).execute();
   }
 
   public Optional<CustomerDTO> findOne(Integer seq) {
@@ -46,6 +46,16 @@ public class CustomerRepository {
       .fetch()
       .intoGroups(Customer.CUSTOMER.fields());
     return getCollect(recordResultMap).findFirst();
+  }
+
+  public Collection<CustomerDTO> findByname(String name) {
+    final Map<Record, Result<Record>> recordResultMap = this.dslContext.select().from(Customer.CUSTOMER)
+      .leftJoin(Product.PRODUCT)
+      .on(Customer.CUSTOMER.ID.eq(Product.PRODUCT.CUSTOMER_ID))
+      .where(Customer.CUSTOMER.NAME.eq(name))
+      .fetch()
+      .intoGroups(Customer.CUSTOMER.fields());
+    return getCollect(recordResultMap).collect(toList());
   }
 
   public Collection<CustomerDTO> findAll() {
